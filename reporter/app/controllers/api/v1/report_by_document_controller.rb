@@ -17,18 +17,27 @@ module Api
             :currency => r[:currency]
           }
         }
-        resp = [
-          {
-            :original => {
-              :documentType => @invoice[:documentType],
-              :documentNumber => @invoice[:documentNumber],
-              :date => @invoice[:date],
-              :amount => @invoice[:amount],
-              :currency => @invoice[:currency]
-            },
-            :responses => responses
-          }        
-        ]
+        if @invoice
+          resp = [
+            {
+              :original => {
+                :documentType => @invoice[:documentType],
+                :documentNumber => @invoice[:documentNumber],
+                :date => @invoice[:date],
+                :amount => @invoice[:amount],
+                :currency => @invoice[:currency]
+              },
+              :responses => responses
+            }        
+          ]
+        else
+          resp = [
+            {
+              :original => {},
+              :responses => responses
+            }        
+          ]
+        end
         render json: resp, satus: :ok
       end
 
@@ -44,7 +53,7 @@ module Api
       def set_document
         @invoice = Invoice.where(documentNumber: params[:id]).first
         @responses = Response.where(originalDocumentNumber: params[:id]).all
-        if @invoice.nil? && @response.nil?
+        if @invoice.nil? && @responses.nil?
           render json: { error: 'No such Documents found'}, status: :bad_request
         end
       end

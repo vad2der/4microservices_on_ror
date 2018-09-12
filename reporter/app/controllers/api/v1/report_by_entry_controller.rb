@@ -6,9 +6,9 @@ module Api
 
       def show
         resp = []
-
+        invoce_document_numbers = []
         @invoices.each {|inv|
-        
+          invoce_document_numbers << inv[:documentNumber]
           responses = []
         
           @responses.where(originalDocumentNumber: inv[:documentNumber]).order_by(date: :desc).each {|r| 
@@ -35,7 +35,25 @@ module Api
           }
           resp << item
         }
-        
+
+        puts invoce_document_numbers
+        if invoce_document_numbers.size > 0
+          @responses.not_in(:originalDocumentNumber => invoce_document_numbers).all.order_by(date: :desc).each {|r|
+            item = {
+              :original => {},
+              :responses => {
+                :documentType => r[:documentType],
+                :documentNumber => r[:documentNumber],
+                :originalDocumentNumber => r[:originalDocumentNumber],
+                :status => r[:status],
+                :date => r[:date],
+                :amount => r[:amount],
+                :currency => r[:currency]
+              }
+            }
+            resp << item
+          }
+        end
         render json: resp, satus: :ok
       end
 
