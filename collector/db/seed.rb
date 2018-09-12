@@ -1,0 +1,1 @@
+AppApiKey.create!()

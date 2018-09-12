@@ -18,11 +18,14 @@ module Api
               delivered = entry.delivered_to_parser ? entry.delivered_to_parser : false
             end while (entry.delivery_tries < 0 || Time.now - start < threshold_seconds)
             
-            render json: {message: 'data recieved and saved', id: entry.id, delivered: delivered, delivery_tries: entry.delivery_tries}, status: :created
+            render json: {message: 'data recieved and saved', id: entry.id, delivered: entry.delivered_to_parser, delivery_tries: entry.delivery_tries}, status: :created
           else
             # check if such entry already exists and report it without creating the DB entry
             entry = Entry.where(input: params.to_json).first
-            render json: {message: 'data is already presented in the db', id: entry.id, delivered: delivered, delivery_tries: entry.delivery_tries}, status: :created
+            if (entry.delivered_to_parser == false || entry.delivered_to_parser.nil?)
+              enrty.send_to_parser()
+            end
+            render json: {message: 'data is already presented in the db', id: entry.id, delivered: entry.delivered_to_parser, delivery_tries: entry.delivery_tries}, status: :created
           end
         rescue => err
           # if something went wrong

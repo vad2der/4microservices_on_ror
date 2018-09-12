@@ -27,8 +27,8 @@ class Entry
       api_key = AppApiKey.first.api_key
       
       # getting the Parser microservice URL dependiong on environment
-      paser_url = Rails.env == "production" ? ENV["PARSER_URL"] : "http://0.0.0.0:3001"
-      
+      parser_url = Rails.env == "production" ? ENV["PARSER_URL"] : "http://0.0.0.0:3001"
+      parser_url = parser_url + '/api/v1/parse'
       # actual HTTP call (POST / include api-key in the )
       response = HTTParty.post(parser_url,
         :body => body,
