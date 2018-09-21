@@ -18,11 +18,11 @@ $ AppApiKey.create!()
 ```sh
 $ rails s -p 3000
 ```
-  - start `parser` on port 3000:
+  - start `parser` on port 3001 + run clockwork to check for undelivered entries:
 ```sh
-$ rails s -p 3001
+$ foreman start -f Procfile.dev
 ```
-  - start `reporter` on port 3000:
+  - start `reporter` on port 3002
 ```sh
 $ rails s -p 3002
 ```
@@ -219,7 +219,7 @@ Responses without invoices are returned as well.
         ]
     }], 200
 ```
-### 7.2.2. api/v1/report_by_document/entry_id
+### 7.2.2. api/v1/report_by_entry/entry_id
 Returning **invoices** and **responses** by entry_id (see section 5.2.2. __id__ field in seccesfull response)
 Return is grupped by `invoice[:documentNumber]` and ordered by invoice date. Note that Responses without invoices goes to the end.
 

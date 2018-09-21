@@ -48,7 +48,7 @@ module Parser
     # }
     Mongoid.load!('./config/mongoid.yml')
     config.after_initialize do
-      Checker.undelivered_from_collector()
+      # Checker.undelivered_from_collector()
     #   ResponsesCheck.deliver_responses()
     #   InvoicesCheck.deliver_invoices()
     end

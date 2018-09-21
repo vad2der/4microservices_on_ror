@@ -23,7 +23,7 @@ module Api
             # check if such entry already exists and report it without creating the DB entry
             entry = Entry.where(input: params.to_json).first
             if (entry.delivered_to_parser == false || entry.delivered_to_parser.nil?)
-              enrty.send_to_parser()
+              entry.send_to_parser()
             end
             render json: {message: 'data is already presented in the db', id: entry.id, delivered: entry.delivered_to_parser, delivery_tries: entry.delivery_tries}, status: :created
           end
