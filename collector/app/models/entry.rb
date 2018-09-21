@@ -26,20 +26,26 @@ class Entry
       # getting api_key to be able to address to Parser microservice
       api_key = AppApiKey.first.api_key
       
-      # getting the Parser microservice URL dependiong on environment
-      parser_url = Rails.env == "production" ? ENV["PARSER_URL"] : "http://0.0.0.0:3001"
-      parser_url = parser_url + '/api/v1/parse'
-      # actual HTTP call (POST / include api-key in the )
-      response = HTTParty.post(parser_url,
-        :body => body,
-        :headers => {'Content-Type' => 'application/json',
-        'api-key' => api_key}
-      )
+      threads = []
 
-      # if call returned status OK, mark that it was successful
-      if response && response.code == 201
-        mark_as_delivered()
+      threads << Thread.new do
+        # getting the Parser microservice URL dependiong on environment
+        parser_url = Rails.env == "production" ? ENV["PARSER_URL"] : "http://0.0.0.0:3001"
+        parser_url = parser_url + '/api/v1/parse'
+        # actual HTTP call (POST / include api-key in the )
+        response = HTTParty.post(parser_url,
+          :body => body,
+          :headers => {'Content-Type' => 'application/json',
+          'api-key' => api_key}
+        )
+
+        # if call returned status OK, mark that it was successful
+        if response && response.code == 201
+          mark_as_delivered()
+        end
       end
+
+      threads.each {|t| t.join }
 
     rescue => err
       # log it
